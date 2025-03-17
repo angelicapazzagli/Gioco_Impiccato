@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\39333\\OneDrive\\Documenti\\Visual Studio 2022\\Gioco_Impiccato\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{674BFE23-C8EE-4514-BEFD-A452813F2FC5}|Gioco_Impiccato\\Gioco_Impiccato.csproj|c:\\users\\39333\\onedrive\\documenti\\visual studio 2022\\gioco_impiccato\\gioco_impiccato\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{674BFE23-C8EE-4514-BEFD-A452813F2FC5}|Gioco_Impiccato\\Gioco_Impiccato.csproj|solutionrelative:gioco_impiccato\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\39333\\OneDrive\\Documenti\\Visual Studio 2022\\Gioco_Impiccato\\Gioco_Impiccato\\Program.cs",
+              "RelativeDocumentMoniker": "Gioco_Impiccato\\Program.cs",
+              "ToolTip": "C:\\Users\\39333\\OneDrive\\Documenti\\Visual Studio 2022\\Gioco_Impiccato\\Gioco_Impiccato\\Program.cs",
+              "RelativeToolTip": "Gioco_Impiccato\\Program.cs",
+              "ViewState": "AgIAAGUAAAAAAAAAAAAkwHkAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-17T20:05:28.289Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
