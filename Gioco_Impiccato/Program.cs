@@ -96,13 +96,16 @@ char[] stringa_array(string segreta)
     }
     return parola_segreta;
 }
-void tentativi_finiti(int n_tentativi, ref int lettere_indovinate, string segreta, ref string non_indovinate)
+void tentativi_finiti(int n_tentativi, string segreta, ref string non_indovinate, char[] sostituta, char[] parola_segreta)
 {
     if(n_tentativi <= 0)
     {
         Console.WriteLine("\nHai esaurito i tentativi. Parola non indovinata.");
-        non_indovinate += segreta + "  ";
-        lettere_indovinate = segreta.Length;
+        non_indovinate += segreta + " ";
+        for (int i = 0; i < sostituta.Length; i++)
+        {
+            sostituta[i] = parola_segreta[i];
+        }
     }
 }
 int punteggio(string livello)
@@ -122,24 +125,28 @@ int punteggio(string livello)
     }
     return punti;
 }
-void jolly(ref char[] sostituta, string segreta, ref int n_jolly)
+void jolly(ref char[] sostituta, string segreta, ref int n_jolly, ref bool utilizzato_j)
 {
-    if (n_jolly > 0)
+    if (utilizzato_j == false)
     {
-        if (sostituta[0] == '_' || sostituta[sostituta.Length - 1] == '_')
+        if (n_jolly > 0)
         {
-            Console.WriteLine("\n\nVuoi utilizzare il jolly? (si o no)");
-            string ut_jolly = Console.ReadLine();
-            if (ut_jolly == "si")
+            if (sostituta[0] == '_' || sostituta[sostituta.Length - 1] == '_')
             {
-                sostituta[0] = segreta[0];
-                sostituta[sostituta.Length - 1] = segreta[sostituta.Length - 1];
-                Console.WriteLine("\nJolly utilizzato. Prima e ultima lettera indovinate.");
-                n_jolly--;
-            }
-            for (int i = 0; i < sostituta.Length; i++)
-            {
-                Console.Write(sostituta[i]);
+                Console.WriteLine("\n\nVuoi utilizzare il jolly? (si o no)");
+                string ut_jolly = Console.ReadLine();
+                if (ut_jolly == "si")
+                {
+                    sostituta[0] = segreta[0];
+                    sostituta[sostituta.Length - 1] = segreta[sostituta.Length - 1];
+                    Console.WriteLine("\nJolly utilizzato. Prima e ultima lettera indovinate.");
+                    n_jolly--;
+                    utilizzato_j = true;
+                    for (int i = 0; i < sostituta.Length; i++)
+                    {
+                        Console.Write(sostituta[i] + " ");
+                    }
+                }
             }
         }
     }
@@ -152,23 +159,27 @@ string ins_indizi(string livello)
     }
     return "";
 }
-void utilizzo_indizi(ref int n_indizi, string livello, char[] sostituta, string indizio)
+void utilizzo_indizi(ref int n_indizi, string livello, char[] sostituta, string indizio, ref bool utilizzato_i)
 {
-    if (n_indizi > 0)
+    if (utilizzato_i == false)
     {
-        if (livello == "3" || livello == "Difficile")
+        if (n_indizi > 0)
         {
-            Console.WriteLine("\n\nVuoi l'indizio? (si o no)");
-            string utilizzo = Console.ReadLine();
-            if (utilizzo == "si")
+            if (livello == "3" || livello == "Difficile")
             {
-                n_indizi--;
-                Console.WriteLine(indizio);
+                Console.WriteLine("\n\nVuoi l'indizio? (si o no)");
+                string utilizzo = Console.ReadLine();
+                if (utilizzo == "si")
+                {
+                    n_indizi--;
+                    utilizzato_i = true;
+                    Console.WriteLine(indizio);
+                    for (int i = 0; i < sostituta.Length; i++)
+                    {
+                        Console.Write(sostituta[i] + " ");
+                    }
+                }
             }
-        }
-        for (int i = 0; i < sostituta.Length; i++)
-        {
-            Console.Write(sostituta[i]);
         }
     }
 }
@@ -176,21 +187,25 @@ void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiud
 {
     int lettere_indovinate = 0, punti;
     string l_provate = "", p_provate = "";
-    while (lettere_indovinate != segreta.Length)
+    bool utilizzato_i = false, utilizzato_j = false;
+    while (sostituta.Contains('_'))
     {
         punti = 0;
         for(int i = 0; i < sostituta.Length; i++)
         {
-            Console.Write(sostituta[i]);
+            Console.Write(sostituta[i] + " ");
         }
-        jolly(ref sostituta, segreta, ref n_jolly);
-        utilizzo_indizi(ref n_indizi, livello, sostituta, indizio);
+        jolly(ref sostituta, segreta, ref n_jolly, ref utilizzato_j);
+        utilizzo_indizi(ref n_indizi, livello, sostituta, indizio, ref utilizzato_i);
         Console.WriteLine("\n\n1. Inserisci lettera\n2. Prova parola\n3. Chiudi");
         string comando = Console.ReadLine();
         Console.WriteLine("\nTentativi rimasti: " + n_tentativi);
         if (comando == "3" || comando == "Chiudi")
         {
-            lettere_indovinate = segreta.Length;
+            for(int i = 0; i < sostituta.Length; i++)
+            {
+                sostituta[i] = parola_segreta[i];
+            }
             chiudi = true;
         }
         else if (comando == "1" || comando == "Inserisci lettera")
@@ -199,7 +214,7 @@ void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiud
             Console.WriteLine("\nLettere provate: ");
             for (int i = 0; i < lettere_provate.Length; i++)
             {
-                Console.Write(lettere_provate[i] + "   ");
+                Console.Write(lettere_provate[i] + "  ");
             }
             Console.WriteLine("\nInserisci lettera: ");
             char lettera = Console.ReadLine()[0];
@@ -227,13 +242,13 @@ void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiud
                     Console.WriteLine("\nLettera errata. Tentativo perso.");
                     n_tentativi--;
                 }
-                if(lettere_indovinate == segreta.Length)
+                if(!sostituta.Contains('_'))
                 {
                     Console.WriteLine("\nComplimenti! Parola indovinata.");
                     p_indovinate += segreta + " ";
                     punti = punteggio(livello);
                 }
-                tentativi_finiti(n_tentativi, ref lettere_indovinate, segreta, ref non_indovinate);
+                tentativi_finiti(n_tentativi, segreta, ref non_indovinate, sostituta, parola_segreta);
             }
         }
         else if (comando == "2" || comando == "Prova parola")
@@ -257,7 +272,10 @@ void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiud
                 {
                     Console.WriteLine("\nComplimenti! Parola indovinata.");
                     p_indovinate += parola_utente + " ";
-                    lettere_indovinate = segreta.Length;
+                    for (int i = 0; i < sostituta.Length; i++)
+                    {
+                        sostituta[i] = parola_segreta[i];
+                    }
                     punti = punteggio(livello);
                 }
                 else
@@ -265,7 +283,7 @@ void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiud
                     Console.WriteLine("\nParola errata. Ritenta quando sarai più sicuro.");
                     n_tentativi--;
                 }
-                tentativi_finiti(n_tentativi, ref lettere_indovinate, segreta, ref non_indovinate);
+                tentativi_finiti(n_tentativi, segreta, ref non_indovinate, sostituta, parola_segreta);
             }
         }
         punteggio_tot += punti;
@@ -281,7 +299,11 @@ while (chiudi == false)
     string[] parole = File.ReadAllLines(file);
     string[] range = new string[10];
     indizi = ins_indizi(livello);
-    string[] indizi_diff = File.ReadAllLines(indizi);
+    string[] indizi_diff = new string[parole.Length];
+    if (livello == "3" || livello == "Difficile")
+    {
+        indizi_diff = File.ReadAllLines(indizi);
+    }
     string[] range_ind = new string[10];
     scelta_tema(parole, range, range_ind, indizi_diff);
     utilizzata = true;
