@@ -1,4 +1,5 @@
 ﻿Random r = new Random();
+//FUNZIONE PER FAR SCEGLIERE ALL'UTENTE IL LIVELLO DI DIFFICOLTA'
 string scelta_livello(ref int n_tentativi, ref string livello)
 {
     bool scelta = false;
@@ -17,7 +18,7 @@ string scelta_livello(ref int n_tentativi, ref string livello)
         {
             scelta = true;
             n_tentativi = 5;
-            Console.WriteLine("\nGuadagnerai 10 punti se indovinerai la parola.\nTentativi disponibili: " + n_tentativi);
+            Console.WriteLine("\nGuadagnerai 10 punti se indovinerai la parola.\nHai tre bonus lettere casuali a disposizione.\nTentativi disponibili: " + n_tentativi);
             return "parole_medie.txt";
         }
         else if (livello == "Difficile" || livello == "3")
@@ -34,6 +35,7 @@ string scelta_livello(ref int n_tentativi, ref string livello)
     }
     return "Errore";
 }
+//FUNZIONE PER FAR SCEGLIERE ALL'UTENTE L'ARGOMENTO DEL GIOCO
 void scelta_tema(string[] parole, string[] range, string[] range_ind, string[] indizi_diff)
 {
     int inizio = 0, fine = 0;
@@ -96,6 +98,7 @@ char[] stringa_array(string segreta)
     }
     return parola_segreta;
 }
+//FUNZIONE CHE CONTROLLA QUELLO CHE FARE NEL CASO FINISCANO I TENTATIVI A DISPOSIZIONE
 void tentativi_finiti(int n_tentativi, string segreta, ref string non_indovinate, char[] sostituta, char[] parola_segreta)
 {
     if(n_tentativi <= 0)
@@ -108,6 +111,7 @@ void tentativi_finiti(int n_tentativi, string segreta, ref string non_indovinate
         }
     }
 }
+//FUNZIONE PER ASSEGNARE I DIVERSI PUNTEGGI IN CASO DI PAROLA CORRETTA A SECONDA DELLA DIFFICOLTA'
 int punteggio(string livello)
 {
     int punti = 0;
@@ -125,6 +129,7 @@ int punteggio(string livello)
     }
     return punti;
 }
+//FUNZIONE PER L'UTILIZZO DEL JOLLY CHE FORNISCE LA PRIMA ED ULTIMA LETTERA
 void jolly(ref char[] sostituta, string segreta, ref int n_jolly, ref bool utilizzato_j)
 {
     if (utilizzato_j == false)
@@ -151,6 +156,7 @@ void jolly(ref char[] sostituta, string segreta, ref int n_jolly, ref bool utili
         }
     }
 }
+//FUNZIONI PER ASSEGNARE GLI INDIZI E CONTROLLARE IL LORO FUNZIONAMENTO NEL CASO DI LIVELLO DIFFICILE
 string ins_indizi(string livello)
 {
     if (livello == "Difficile" || livello == "3")
@@ -183,11 +189,55 @@ void utilizzo_indizi(ref int n_indizi, string livello, char[] sostituta, string 
         }
     }
 }
-void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiudi, string segreta, ref int n_tentativi, ref string p_indovinate, ref string non_indovinate, string livello, ref int punteggio_tot, ref int n_jolly, ref int n_indizi, string[] indizi_diff, string indizio)
+//FUNZIONE PER BONUS RIVELAZIONE LETTERA CASUALE NEL CASO DI DIFFICOLTA' MEDIA
+void bonus(ref int bonus_lettera, string segreta, ref char[] sostituta, string livello, ref bool utilizzato_b)
+{
+    int indice = -1, casuale;
+    char lettera;
+    if (livello == "2" || livello == "Medio")
+    {
+        if (utilizzato_b == false)
+        {
+            if (bonus_lettera > 0)
+            {
+                Console.WriteLine("\n\nVuoi utilizzare il bonus lettera? (si o no)");
+                string risp_bonus = Console.ReadLine();
+                if (risp_bonus == "si")
+                {
+                    bonus_lettera--;
+                    utilizzato_b = true;
+                    while (indice == -1)
+                    {
+                        casuale = r.Next(0, sostituta.Length);
+                        if (sostituta[casuale] == '_')
+                        {
+                            indice = casuale;
+                        }
+                    }
+                    lettera = segreta[indice];
+                    for (int i = 0; i < sostituta.Length; i++)
+                    {
+                        if (segreta[i] == lettera)
+                        {
+                            sostituta[i] = lettera;
+                        }
+                    }
+                }
+                Console.WriteLine("\nParola con lettera aggiunta: ");
+                for (int i = 0; i < sostituta.Length; i++)
+                {
+                    Console.Write(sostituta[i] + " ");
+                }
+            }
+        }
+    }
+}
+//FUNZIONE CHE CONTIENE IL FUNZIONAMENTO GENERALE DEL GIOCO E GESTISCE I CASI POSSIBILI
+void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiudi, string segreta, ref int n_tentativi, ref string p_indovinate, ref string non_indovinate, string livello, ref int punteggio_tot, ref int n_jolly, ref int n_indizi, string[] indizi_diff, string indizio, ref int bonus_lettera)
 {
     int lettere_indovinate = 0, punti;
     string l_provate = "", p_provate = "";
-    bool utilizzato_i = false, utilizzato_j = false;
+    bool utilizzato_i = false, utilizzato_j = false, utilizzato_b = false;
     while (sostituta.Contains('_'))
     {
         punti = 0;
@@ -197,9 +247,13 @@ void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiud
         }
         jolly(ref sostituta, segreta, ref n_jolly, ref utilizzato_j);
         utilizzo_indizi(ref n_indizi, livello, sostituta, indizio, ref utilizzato_i);
+        bonus(ref bonus_lettera, segreta, ref sostituta, livello, ref utilizzato_b);
         Console.WriteLine("\n\n1. Inserisci lettera\n2. Prova parola\n3. Chiudi");
         string comando = Console.ReadLine();
-        Console.WriteLine("\nTentativi rimasti: " + n_tentativi);
+        if (comando != "3" && comando != "Chiudi")
+        {
+            Console.WriteLine("\nTentativi rimasti: " + n_tentativi);
+        }           
         if (comando == "3" || comando == "Chiudi")
         {
             for(int i = 0; i < sostituta.Length; i++)
@@ -289,12 +343,15 @@ void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiud
         punteggio_tot += punti;
     }
 }
+//OUTPUT INDICAZIONI
 Console.WriteLine("Benvenuto nel gioco dell'impiccato.\nIl gioco consiste nell'indovinare una parola, scegliendo la difficoltà ed il tema ed inserendo un carattere o la parola.\nHai a disposizione tre jolly in totale, permettono di rivelare la prima e l'ultima lettera.\nBuona fortuna!");
 bool chiudi = false, utilizzata;
-int indice_casuale = -1, n_tentativi = 0, punteggio_tot = 0, n_jolly = 3, n_indizi = 3;
+int indice_casuale = -1, n_tentativi = 0, punteggio_tot = 0, n_jolly = 3, n_indizi = 3, n_bonus = 3;
 string livello = "", file, segreta = "", p_indovinate = "", non_indovinate = "", indizi, indizio = "";
+//CICLO CHE RIPETE IL FUNZIONAMENTO DEL GIOCO CON I VARI CASI FINCHE' L'UTENTE NON DECIDE DI CHIUDERE
 while (chiudi == false)
 {
+    //ASSEGNAZIONE E SCELTA DI FILE, PAROLE, INDIZI
     file = scelta_livello(ref n_tentativi, ref livello);
     string[] parole = File.ReadAllLines(file);
     string[] range = new string[10];
@@ -320,11 +377,12 @@ while (chiudi == false)
     char[] parola_segreta = stringa_array(segreta);
     char[] sostituta = sostituzione(segreta);
     Console.WriteLine("\nCaricamento della parola in corso....\n");
-    indovina_parola(ref sostituta, parola_segreta, ref chiudi, segreta, ref n_tentativi, ref p_indovinate, ref non_indovinate, livello, ref punteggio_tot, ref n_jolly, ref n_indizi, indizi_diff, indizio);
+    indovina_parola(ref sostituta, parola_segreta, ref chiudi, segreta, ref n_tentativi, ref p_indovinate, ref non_indovinate, livello, ref punteggio_tot, ref n_jolly, ref n_indizi, indizi_diff, indizio, ref n_bonus);
 }
 string[] parole_indovinate = p_indovinate.Split(' ');
 string[] parole_non_indovinate = non_indovinate.Split(' ');
-for(int i = 0; i <  parole_non_indovinate.Length; i++)
+//CICLO CHE CONTROLLA CHE SE LA PAROLA SI TROVA SIA SU INDOVINATE CHE NON LA TOGLIE DALLE NON INDOVINATE
+for(int i = 0; i < parole_non_indovinate.Length; i++)
 {
     for(int j = 0; j < parole_indovinate.Length; j++)
     {
@@ -334,6 +392,7 @@ for(int i = 0; i <  parole_non_indovinate.Length; i++)
         }
     }
 }
+//OUTPUT RISULTATI FINALI DEL GIOCO
 Console.WriteLine("\nParole indovinate: ");
 for(int i = 0; i < parole_indovinate.Length;  i++)
 {
