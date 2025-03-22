@@ -1,6 +1,6 @@
 ﻿Random r = new Random();
 //FUNZIONE PER FAR SCEGLIERE ALL'UTENTE IL LIVELLO DI DIFFICOLTA'
-string scelta_livello(ref int n_tentativi, ref string livello)
+string scelta_livello(ref int n_tentativi, ref string livello, int n_indizi, int n_bonus)
 {
     bool scelta = false;
     while (scelta == false)
@@ -18,14 +18,14 @@ string scelta_livello(ref int n_tentativi, ref string livello)
         {
             scelta = true;
             n_tentativi = 5;
-            Console.WriteLine("\nGuadagnerai 10 punti se indovinerai la parola.\nHai tre bonus lettere casuali a disposizione.\nTentativi disponibili: " + n_tentativi);
+            Console.WriteLine("\nGuadagnerai 10 punti se indovinerai la parola.\nHai " + n_bonus + " bonus lettere casuali a disposizione.\nTentativi disponibili: " + n_tentativi);
             return "parole_medie.txt";
         }
         else if (livello == "Difficile" || livello == "3")
         {
             scelta = true;
             n_tentativi = 7;
-            Console.WriteLine("\nGuadagnerai 20 punti se indovinerai la parola.\nHai tre indizi a disposizione.\nTentativi disponibili: " + n_tentativi);
+            Console.WriteLine("\nGuadagnerai 20 punti se indovinerai la parola.\nHai " + n_indizi + " indizi a disposizione.\nTentativi disponibili: " + n_tentativi);
             return "parole_difficili.txt";
         }
         else
@@ -296,13 +296,13 @@ void indovina_parola(ref char[] sostituta, char[] parola_segreta, ref bool chiud
                     Console.WriteLine("\nLettera errata. Tentativo perso.");
                     n_tentativi--;
                 }
-                if(!sostituta.Contains('_'))
-                {
-                    Console.WriteLine("\nComplimenti! Parola indovinata.");
-                    p_indovinate += segreta + " ";
-                    punti = punteggio(livello);
-                }
                 tentativi_finiti(n_tentativi, segreta, ref non_indovinate, sostituta, parola_segreta);
+            }
+            if (!sostituta.Contains('_'))
+            {
+                Console.WriteLine("\nComplimenti! Parola indovinata.");
+                p_indovinate += segreta + " ";
+                punti = punteggio(livello);
             }
         }
         else if (comando == "2" || comando == "Prova parola")
@@ -352,7 +352,7 @@ string livello = "", file, segreta = "", p_indovinate = "", non_indovinate = "",
 while (chiudi == false)
 {
     //ASSEGNAZIONE E SCELTA DI FILE, PAROLE, INDIZI
-    file = scelta_livello(ref n_tentativi, ref livello);
+    file = scelta_livello(ref n_tentativi, ref livello, n_indizi, n_bonus);
     string[] parole = File.ReadAllLines(file);
     string[] range = new string[10];
     indizi = ins_indizi(livello);
